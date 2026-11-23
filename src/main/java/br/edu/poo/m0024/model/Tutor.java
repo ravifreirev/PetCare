@@ -106,6 +106,10 @@ public class Tutor {
         if (telefone != null) {
             telefone = telefone.replaceAll("[()\\s-]","");
         }
+
+        if (!telefone.matches("\\d{11}")) {
+            throw new IllegalArgumentException("O telefone deve conter 11 dígitos, incluindo o DDD");
+        }
         this.telefone = telefone;
     }
 
