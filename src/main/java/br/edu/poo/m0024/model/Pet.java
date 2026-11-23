@@ -6,6 +6,7 @@ public class Pet {
     private String nome;
     private String raca;
     private String especie;
+    private String sexo;
     private int idade;
     private int tutorId;
 
@@ -15,20 +16,22 @@ public class Pet {
     }
 
     // Construtor com todos os atributos, menos o id
-    public Pet(String nome, String raca, String especie, int idade, int tutorId) {
+    public Pet(String nome, String raca, String especie, String sexo, int idade, int tutorId) {
         setNome(nome);
         setRaca(raca);
         setEspecie(especie);
+        setSexo(sexo);
         setIdade(idade);
         setTutorId(tutorId);
     }
 
     // Construtor com todos os atributos
-    public Pet(int id, String nome, String raca, String especie, int idade, int tutorId) {
+    public Pet(int id, String nome, String raca, String especie, String sexo, int idade, int tutorId) {
         setId(id);
         setNome(nome);
         setRaca(raca);
         setEspecie(especie);
+        setSexo(sexo);
         setIdade(idade);
         setTutorId(tutorId);
 
@@ -50,6 +53,8 @@ public class Pet {
     public String getEspecie() {
         return  especie;
     }
+
+    public String getSexo() { return sexo; }
 
     public int getIdade() {
         return idade;
@@ -89,6 +94,15 @@ public class Pet {
         }
 
         this.especie = especie;
+    }
+
+    public void setSexo(String sexo) {
+
+        if (sexo == null || sexo.isBlank()) {
+            throw new IllegalArgumentException("Sexo não pode ficar vazio.");
+        }
+
+        this.sexo = sexo;
     }
 
     public void setIdade(int idade) {
