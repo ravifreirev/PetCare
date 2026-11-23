@@ -102,6 +102,10 @@ public class Tutor {
     }
 
     public void setTelefone(String telefone) {
+
+        if (telefone != null) {
+            telefone = telefone.replaceAll("[()\\s-]","");
+        }
         this.telefone = telefone;
     }
 
