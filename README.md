@@ -24,9 +24,8 @@ Autor: Ravi Freire
 ## Pré-requisitos
 
 - JDK 21 instalado
-- Maven instalado (ou usar o Maven do IntelliJ IDEA)
 - MySQL Server em execução
-- Conexão com a internet (para consultar o ViaCEP)
+- Conexão com a internet (para consultar o ViaCEP e baixar as dependências)
 
 ## Instalação e execução
 
@@ -71,8 +70,14 @@ DB_PASSWORD=sua_senha_mysql
 
 **Pelo terminal** (na pasta do projeto, onde está o `pom.xml`):
 
+Windows:
 ```bash
-mvn compile exec:java
+.\mvnw.cmd compile exec:java
+```
+
+Linux/Mac:
+```bash
+./mvnw compile exec:java
 ```
 
 > O programa lê o `.env` a partir da pasta onde é executado. Execute sempre a partir da raiz do projeto.
