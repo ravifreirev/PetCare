@@ -27,7 +27,9 @@ public class PetDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(
+                    "Erro ao acessar o banco de dados: " + e.getMessage(), e
+            );
         }
     }
 
@@ -86,7 +88,9 @@ public class PetDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(
+                    "Erro ao acessar o banco de dados: " + e.getMessage(), e
+            );
         }
     }
 
@@ -118,7 +122,9 @@ public class PetDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(
+                    "Erro ao acessar o banco de dados: " + e.getMessage(), e
+            );
         }
     }
 
@@ -142,7 +148,9 @@ public class PetDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(
+                    "Erro ao acessar o banco de dados: " + e.getMessage(), e
+            );
         }
     }
 
@@ -182,7 +190,9 @@ public class PetDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(
+                    "Erro ao acessar o banco de dados: " + e.getMessage(), e
+            );
         }
     }
 }
