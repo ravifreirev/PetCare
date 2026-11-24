@@ -1,12 +1,13 @@
+
 package br.edu.poo.m0024.database;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
-import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.SQLException;
 
-public class Conexao {
+import io.github.cdimascio.dotenv.Dotenv;
 
-    private static Connection connection;
+public class Conexao {
 
     public static Connection connect() {
 
@@ -17,12 +18,17 @@ public class Conexao {
         String senha = dotenv.get("DB_PASSWORD");
 
         try {
-            connection = DriverManager.getConnection(url, usuario, senha);
+            // Desativa a thread de limpeza do MySQL Connector/J.
+            // Os DAOs fecham explicitamente todas as conexões.
+            System.setProperty(
+                    "com.mysql.cj.disableAbandonedConnectionCleanup",
+                    "true"
+            );
+
+            return DriverManager.getConnection(url, usuario, senha);
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-        return  connection;
-
     }
 }

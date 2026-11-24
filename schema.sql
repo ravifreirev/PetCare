@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS tutor (
     endereco  VARCHAR(150) NOT NULL,
     cidade    VARCHAR(100) NOT NULL,
     estado    VARCHAR(2)   NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    CONSTRAINT uk_tutor_cpf UNIQUE (cpf)
     ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS pet (

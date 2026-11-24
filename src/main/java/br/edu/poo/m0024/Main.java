@@ -75,6 +75,7 @@ public class Main {
 
         } while (opcao != 0);
 
+        viaCepService.fechar();
         scanner.close();
     }
 

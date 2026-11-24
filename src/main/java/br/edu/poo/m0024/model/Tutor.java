@@ -1,6 +1,8 @@
+
 package br.edu.poo.m0024.model;
 
 public class Tutor {
+
     private int id;
     private String nome;
     private String cpf;
@@ -40,7 +42,7 @@ public class Tutor {
         setEstado(estado);
     }
 
-    //Getters
+    // Getters
     public int getId() {
         return id;
     }
@@ -73,14 +75,26 @@ public class Tutor {
         return estado;
     }
 
-    //Setters
-    public void setId( int id) {
+    // Setters com validações
+
+    public void setId(int id) {
         this.id = id;
     }
 
     public void setNome(String nome) {
+
         if (nome == null || nome.isBlank()) {
-            throw new IllegalArgumentException("O nome não pode ficar vazio.");
+            throw new IllegalArgumentException(
+                    "O nome não pode ficar vazio."
+            );
+        }
+
+        nome = nome.trim();
+
+        if (nome.length() > 100) {
+            throw new IllegalArgumentException(
+                    "O nome não pode ultrapassar 100 caracteres."
+            );
         }
 
         this.nome = nome;
@@ -88,34 +102,38 @@ public class Tutor {
 
     public void setCpf(String cpf) {
 
-        if (cpf == null || cpf.isBlank()){
+        if (cpf == null || cpf.isBlank()) {
             throw new IllegalArgumentException("CPF inválido.");
         }
 
-        String cpfLimpo = cpf.replaceAll("[.-]", "");
+        String cpfLimpo = cpf.trim().replaceAll("[.-]", "");
 
-        if (cpfLimpo.length() != 11|| !cpfLimpo.matches("\\d{11}")){
-            throw new IllegalArgumentException("CPF inválido.");
+        if (!cpfLimpo.matches("\\d{11}")) {
+            throw new IllegalArgumentException(
+                    "O CPF deve conter exatamente 11 dígitos."
+            );
         }
 
         this.cpf = cpfLimpo;
     }
 
     public void setTelefone(String telefone) {
+
         if (telefone == null || telefone.isBlank()) {
             this.telefone = null;
             return;
         }
 
-        telefone = telefone.replaceAll("[()\\s-]", "");
+        String telefoneLimpo = telefone.trim()
+                .replaceAll("[()\\s-]", "");
 
-        if (!telefone.matches("\\d{11}")) {
+        if (!telefoneLimpo.matches("\\d{11}")) {
             throw new IllegalArgumentException(
-                    "O telefone deve conter 11 dígitos, incluindo o DDD"
+                    "O telefone deve conter 11 dígitos, incluindo o DDD."
             );
         }
 
-        this.telefone = telefone;
+        this.telefone = telefoneLimpo;
     }
 
     public void setCep(String cep) {
@@ -124,22 +142,15 @@ public class Tutor {
             throw new IllegalArgumentException("CEP inválido.");
         }
 
-        String cepLimpo = cep.replaceAll("-", "");
+        String cepLimpo = cep.trim().replace("-", "");
 
-        if (cepLimpo.length() != 8 || !cepLimpo.matches("\\d{8}")) {
-            throw new IllegalArgumentException("CEP inválido");
+        if (!cepLimpo.matches("\\d{8}")) {
+            throw new IllegalArgumentException(
+                    "O CEP deve conter exatamente 8 dígitos."
+            );
         }
 
         this.cep = cepLimpo;
-    }
-
-    public void setCidade(String cidade) {
-
-        if (cidade == null || cidade.isBlank()) {
-            throw new IllegalArgumentException("Cidade inválida.");
-        }
-
-        this.cidade = cidade;
     }
 
     public void setEndereco(String endereco) {
@@ -148,13 +159,46 @@ public class Tutor {
             throw new IllegalArgumentException("Endereço inválido.");
         }
 
+        endereco = endereco.trim();
+
+        if (endereco.length() > 150) {
+            throw new IllegalArgumentException(
+                    "O endereço não pode ultrapassar 150 caracteres."
+            );
+        }
+
         this.endereco = endereco;
+    }
+
+    public void setCidade(String cidade) {
+
+        if (cidade == null || cidade.isBlank()) {
+            throw new IllegalArgumentException("Cidade inválida.");
+        }
+
+        cidade = cidade.trim();
+
+        if (cidade.length() > 100) {
+            throw new IllegalArgumentException(
+                    "A cidade não pode ultrapassar 100 caracteres."
+            );
+        }
+
+        this.cidade = cidade;
     }
 
     public void setEstado(String estado) {
 
         if (estado == null || estado.isBlank()) {
             throw new IllegalArgumentException("Estado inválido.");
+        }
+
+        estado = estado.trim();
+
+        if (estado.length() > 2) {
+            throw new IllegalArgumentException(
+                    "O estado deve ter no máximo 2 caracteres (UF)."
+            );
         }
 
         this.estado = estado;

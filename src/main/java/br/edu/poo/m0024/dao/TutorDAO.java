@@ -9,26 +9,43 @@ import java.sql.SQLException;
 public class TutorDAO {
 
     public void cadastrar(Tutor tutor) {
-        String sql = "INSERT INTO tutor (nome, cpf, telefone, cep, endereco, cidade, estado) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        String sqlVerificar = "SELECT id FROM tutor WHERE cpf = ?";
+        String sqlInserir = "INSERT INTO tutor (nome, cpf, telefone, cep, endereco, cidade, estado) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conexao = Conexao.connect();
-        PreparedStatement stmt = conexao.prepareStatement(sql)) {
+             PreparedStatement consulta = conexao.prepareStatement(sqlVerificar)) {
 
-            stmt.setString(1, tutor.getNome());
-            stmt.setString(2, tutor.getCpf());
-            stmt.setString(3, tutor.getTelefone());
-            stmt.setString(4, tutor.getCep());
-            stmt.setString(5, tutor.getEndereco());
-            stmt.setString(6, tutor.getCidade());
-            stmt.setString(7, tutor.getEstado());
+            // Verifica se o CPF já está cadastrado
+            consulta.setString(1, tutor.getCpf());
 
-            stmt.executeUpdate();
+            try (ResultSet resultado = consulta.executeQuery()) {
 
-    } catch (SQLException e) {
+                if (resultado.next()) {
+                    throw new IllegalArgumentException(
+                            "Já existe um tutor cadastrado com esse CPF."
+                    );
+                }
+            }
+
+            // Se não existir, realiza o cadastro
+            try (PreparedStatement stmt = conexao.prepareStatement(sqlInserir)) {
+
+                stmt.setString(1, tutor.getNome());
+                stmt.setString(2, tutor.getCpf());
+                stmt.setString(3, tutor.getTelefone());
+                stmt.setString(4, tutor.getCep());
+                stmt.setString(5, tutor.getEndereco());
+                stmt.setString(6, tutor.getCidade());
+                stmt.setString(7, tutor.getEstado());
+
+                stmt.executeUpdate();
+            }
+
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-  }
+    }
 
   public void listar() {
 
