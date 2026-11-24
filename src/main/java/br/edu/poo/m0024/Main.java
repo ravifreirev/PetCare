@@ -172,18 +172,123 @@ public class Main {
             return;
         }
 
+        System.out.println();
         System.out.println("Tutor encontrado: " + tutorEncontrado.getNome());
+        System.out.println("=================================");
+        System.out.println("       ATUALIZAR TUTOR");
+        System.out.println("=================================");
+        System.out.println("1 - Nome");
+        System.out.println("2 - CPF");
+        System.out.println("3 - Telefone");
+        System.out.println("4 - Endereço (CEP, rua, número, cidade e estado)");
+        System.out.println("0 - Voltar");
+        System.out.println("=================================");
 
-        System.out.print("Digite o novo nome do tutor: ");
-        String novoNome = scanner.nextLine();
+        int opcao = lerInt("Escolha o que deseja atualizar: ");
 
-        tutorEncontrado.setNome(novoNome);
+        switch (opcao) {
+
+            case 1:
+                System.out.print("Digite o novo nome: ");
+                String novoNome = scanner.nextLine();
+
+                tutorEncontrado.setNome(novoNome);
+                break;
+
+            case 2:
+                System.out.print("Digite o novo CPF: ");
+                String novoCpf = scanner.nextLine();
+
+                tutorEncontrado.setCpf(novoCpf);
+
+                // Verifica se outro tutor já utiliza esse CPF
+                if (tutorDAO.cpfJaCadastrado(
+                        tutorEncontrado.getCpf(),
+                        tutorEncontrado.getId())) {
+
+                    throw new IllegalArgumentException(
+                            "Já existe outro tutor cadastrado com esse CPF."
+                    );
+                }
+                break;
+
+            case 3:
+                System.out.print("Digite o novo telefone (deixe vazio para remover): ");
+                String novoTelefone = scanner.nextLine();
+
+                tutorEncontrado.setTelefone(novoTelefone);
+                break;
+
+            case 4:
+                if (!atualizarEnderecoTutor(tutorEncontrado)) {
+                    return;
+                }
+                break;
+
+            case 0:
+                System.out.println("Atualização cancelada.");
+                return;
+
+            default:
+                System.out.println("Opção inválida!");
+                return;
+        }
 
         tutorDAO.atualizar(tutorEncontrado);
 
         System.out.println();
         System.out.println("Tutor atualizado com sucesso!");
     }
+
+
+    private static boolean atualizarEnderecoTutor(Tutor tutor) {
+
+        System.out.print("Digite o novo CEP: ");
+        String cep = scanner.nextLine();
+
+        String cepLimpo = cep.trim().replace("-", "");
+
+        if (!cepLimpo.matches("\\d{8}")) {
+            throw new IllegalArgumentException(
+                    "CEP inválido. Digite 8 números."
+            );
+        }
+
+        // Consulta o novo CEP na API ViaCEP
+        ViaCepResposta endereco = viaCepService.consultarCep(cepLimpo);
+
+        if (endereco == null || endereco.getLocalidade() == null) {
+            System.out.println("CEP não encontrado! Atualização cancelada.");
+            return false;
+        }
+
+        String logradouro = endereco.getLogradouro();
+
+        if (logradouro == null || logradouro.isBlank()) {
+            System.out.print("O ViaCEP não informou a rua. Digite o nome da rua: ");
+            logradouro = scanner.nextLine();
+        }
+
+        System.out.print("Digite o número da residência: ");
+        String numero = scanner.nextLine().trim();
+
+        if (numero.isBlank()) {
+            throw new IllegalArgumentException(
+                    "O número da residência não pode ficar vazio."
+            );
+        }
+
+        String enderecoCompleto = logradouro + ", n° " + numero;
+
+        // Atualiza os dados do endereço do tutor
+        tutor.setCep(cepLimpo);
+        tutor.setEndereco(enderecoCompleto);
+        tutor.setCidade(endereco.getLocalidade());
+        tutor.setEstado(endereco.getUf());
+
+        return true;
+    }
+
 
     private static void excluirTutor() {
 

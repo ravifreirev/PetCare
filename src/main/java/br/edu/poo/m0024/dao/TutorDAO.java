@@ -1,12 +1,17 @@
+
 package br.edu.poo.m0024.dao;
+
 import br.edu.poo.m0024.database.Conexao;
 import br.edu.poo.m0024.model.Tutor;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class TutorDAO {
+
+    // ================= CADASTRAR =================
 
     public void cadastrar(Tutor tutor) {
 
@@ -47,12 +52,14 @@ public class TutorDAO {
         }
     }
 
-  public void listar() {
+    // ================= LISTAR =================
 
-        String sql = "SELECT * FROM tutor;";
+    public void listar() {
+
+        String sql = "SELECT * FROM tutor";
 
         try (Connection conexao = Conexao.connect();
-        PreparedStatement stmt = conexao.prepareStatement(sql);
+             PreparedStatement stmt = conexao.prepareStatement(sql);
              ResultSet resultado = stmt.executeQuery()) {
 
             while (resultado.next()) {
@@ -66,15 +73,17 @@ public class TutorDAO {
                 System.out.println("Cidade: " + resultado.getString("cidade"));
                 System.out.println("Estado: " + resultado.getString("estado"));
                 System.out.println("-------------------------");
-
             }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-  }
+    }
+
+    // ================= BUSCAR POR ID =================
 
     public Tutor buscarPorId(int id) {
+
         String sql = "SELECT * FROM tutor WHERE id = ?";
 
         try (Connection conexao = Conexao.connect();
@@ -105,12 +114,35 @@ public class TutorDAO {
         }
     }
 
-  public void atualizar (Tutor tutor) {
+    // ================= VERIFICAR CPF DUPLICADO =================
 
-        String sql = "UPDATE tutor SET nome = ?, cpf = ?, telefone = ?, cep = ?, endereco = ?, cidade = ?, estado =? WHERE id = ?";
+    public boolean cpfJaCadastrado(String cpf, int idIgnorado) {
+
+        String sql = "SELECT id FROM tutor WHERE cpf = ? AND id <> ?";
 
         try (Connection conexao = Conexao.connect();
-        PreparedStatement stmt = conexao.prepareStatement(sql)){
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
+
+            stmt.setString(1, cpf);
+            stmt.setInt(2, idIgnorado);
+
+            try (ResultSet resultado = stmt.executeQuery()) {
+                return resultado.next();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // ================= ATUALIZAR =================
+
+    public void atualizar(Tutor tutor) {
+
+        String sql = "UPDATE tutor SET nome = ?, cpf = ?, telefone = ?, cep = ?, endereco = ?, cidade = ?, estado = ? WHERE id = ?";
+
+        try (Connection conexao = Conexao.connect();
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
             stmt.setString(1, tutor.getNome());
             stmt.setString(2, tutor.getCpf());
@@ -126,14 +158,16 @@ public class TutorDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-  }
+    }
 
-  public void excluir(int id) {
+    // ================= EXCLUIR =================
+
+    public void excluir(int id) {
 
         String sql = "DELETE FROM tutor WHERE id = ?";
 
         try (Connection conexao = Conexao.connect();
-        PreparedStatement stmt = conexao.prepareStatement(sql)){
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             stmt.executeUpdate();
@@ -141,6 +175,5 @@ public class TutorDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-  }
-
+    }
 }
