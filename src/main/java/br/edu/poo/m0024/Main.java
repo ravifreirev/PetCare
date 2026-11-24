@@ -301,14 +301,18 @@ public class Main {
             return;
         }
 
-        try {
-            tutorDAO.excluir(id);
+        // Verifica se existem pets associados ao tutor
+        if (petDAO.existePetDoTutor(id)) {
             System.out.println();
-            System.out.println("Tutor excluído com sucesso!");
-        } catch (RuntimeException e) {
-            System.out.println("Não foi possível excluir o tutor. "
-                    + "Verifique se ele ainda possui pets cadastrados (exclua os pets primeiro).");
+            System.out.println("Este tutor possui pets cadastrados.");
+            System.out.println("Exclua os pets primeiro para remover este tutor.");
+            return;
         }
+
+        tutorDAO.excluir(id);
+
+        System.out.println();
+        System.out.println("Tutor excluído com sucesso!");
     }
 
     // ================= PET =================
@@ -357,12 +361,80 @@ public class Main {
             return;
         }
 
+        System.out.println();
         System.out.println("Pet encontrado: " + petEncontrado.getNome());
+        System.out.println("=================================");
+        System.out.println("         ATUALIZAR PET");
+        System.out.println("=================================");
+        System.out.println("1 - Nome");
+        System.out.println("2 - Raça");
+        System.out.println("3 - Espécie");
+        System.out.println("4 - Sexo");
+        System.out.println("5 - Idade");
+        System.out.println("6 - Tutor responsável");
+        System.out.println("0 - Voltar");
+        System.out.println("=================================");
 
-        System.out.print("Digite o novo nome do pet: ");
-        String novoNomePet = scanner.nextLine();
+        int opcao = lerInt("Escolha o que deseja atualizar: ");
 
-        petEncontrado.setNome(novoNomePet);
+        switch (opcao) {
+
+            case 1: {
+                System.out.print("Digite o novo nome: ");
+                String novoNome = scanner.nextLine();
+                petEncontrado.setNome(novoNome);
+                break;
+            }
+
+            case 2: {
+                System.out.print("Digite a nova raça: ");
+                String novaRaca = scanner.nextLine();
+                petEncontrado.setRaca(novaRaca);
+                break;
+            }
+
+            case 3: {
+                System.out.print("Digite a nova espécie: ");
+                String novaEspecie = scanner.nextLine();
+                petEncontrado.setEspecie(novaEspecie);
+                break;
+            }
+
+            case 4: {
+                System.out.print("Digite o novo sexo: ");
+                String novoSexo = scanner.nextLine();
+                petEncontrado.setSexo(novoSexo);
+                break;
+            }
+
+            case 5: {
+                int novaIdade = lerInt("Digite a nova idade: ");
+                petEncontrado.setIdade(novaIdade);
+                break;
+            }
+
+            case 6: {
+                int novoTutorId = lerInt("Digite o ID do novo tutor responsável: ");
+
+                Tutor tutorEncontrado = tutorDAO.buscarPorId(novoTutorId);
+
+                if (tutorEncontrado == null) {
+                    System.out.println("Tutor não encontrado! Atualização cancelada.");
+                    return;
+                }
+
+                petEncontrado.setTutorId(novoTutorId);
+                break;
+            }
+
+            case 0:
+                System.out.println("Atualização cancelada.");
+                return;
+
+            default:
+                System.out.println("Opção inválida!");
+                return;
+        }
 
         petDAO.atualizar(petEncontrado);
 

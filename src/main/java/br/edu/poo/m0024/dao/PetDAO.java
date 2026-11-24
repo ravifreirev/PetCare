@@ -86,22 +86,43 @@ public class PetDAO {
 
     public void atualizar(Pet pet) {
 
-        String sql = "UPDATE pet SET nome = ?, idade = ?, especie = ?, raca = ?, sexo = ? WHERE id = ?";
+        String sql = "UPDATE pet SET nome = ?, idade = ?, especie = ?, raca = ?, sexo = ?, tutor_id = ? WHERE id = ?";
 
         try (Connection conexao = Conexao.connect();
-        PreparedStatement stmt = conexao.prepareStatement(sql)) {
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
             stmt.setString(1, pet.getNome());
             stmt.setInt(2, pet.getIdade());
             stmt.setString(3, pet.getEspecie());
             stmt.setString(4, pet.getRaca());
             stmt.setString(5, pet.getSexo());
-            stmt.setInt(6, pet.getId());
+            stmt.setInt(6, pet.getTutorId());
+            stmt.setInt(7, pet.getId());
 
             stmt.executeUpdate();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public boolean existePetDoTutor(int tutorId) {
+
+        String sql = "SELECT 1 FROM pet WHERE tutor_id = ? LIMIT 1";
+
+        try (Connection conexao = Conexao.connect();
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
+
+            stmt.setInt(1, tutorId);
+
+            try (ResultSet resultado = stmt.executeQuery()) {
+                return resultado.next();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao consultar pets: " + e.getMessage(), e
+            );
         }
     }
 

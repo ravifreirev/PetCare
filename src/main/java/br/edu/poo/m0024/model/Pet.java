@@ -132,13 +132,20 @@ public class Pet {
 
     public void setSexo(String sexo) {
 
-        if (sexo == null || sexo.isBlank()) {
+        if (sexo == null) {
             throw new IllegalArgumentException(
                     "Sexo não pode ficar vazio."
             );
         }
 
-        sexo = sexo.trim();
+        // Remove caracteres invisíveis de codificação e espaços
+        sexo = sexo.replace("\uFEFF", "").trim();
+
+        if (sexo.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Sexo não pode ficar vazio."
+            );
+        }
 
         if (sexo.length() > 10) {
             throw new IllegalArgumentException(
