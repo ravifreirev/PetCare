@@ -33,7 +33,7 @@ Autor: Ravi Freire
 
 ```bash
 git clone https://github.com/ravifreirev/PetCare
-cd petcare
+cd PetCare
 ```
 
 ### 2. Criar o banco de dados
@@ -65,6 +65,8 @@ DB_PASSWORD=sua_senha_mysql
 ```
 
 ### 4. Executar o projeto
+
+**Pré-requisito:** JDK 21 instalado.
 
 **Pelo IntelliJ IDEA:** abra a pasta do projeto, aguarde o Maven baixar as dependências e execute a classe `Main` (`br.edu.poo.m0024.Main`).
 
