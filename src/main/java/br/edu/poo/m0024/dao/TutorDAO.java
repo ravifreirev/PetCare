@@ -56,23 +56,41 @@ public class TutorDAO {
 
     public void listar() {
 
-        String sql = "SELECT * FROM tutor";
+        String sql = "SELECT * FROM tutor ORDER BY id";
 
         try (Connection conexao = Conexao.connect();
              PreparedStatement stmt = conexao.prepareStatement(sql);
              ResultSet resultado = stmt.executeQuery()) {
 
+            boolean encontrou = false;
+
             while (resultado.next()) {
 
+                encontrou = true;
+
+                String telefone = resultado.getString("telefone");
+
+                if (telefone == null || telefone.isBlank()) {
+                    telefone = "Não informado";
+                }
+
+                System.out.println("=================================");
+                System.out.println("          DADOS DO TUTOR");
+                System.out.println("=================================");
                 System.out.println("ID: " + resultado.getInt("id"));
                 System.out.println("Nome: " + resultado.getString("nome"));
                 System.out.println("CPF: " + resultado.getString("cpf"));
-                System.out.println("Telefone: " + resultado.getString("telefone"));
+                System.out.println("Telefone: " + telefone);
                 System.out.println("CEP: " + resultado.getString("cep"));
                 System.out.println("Endereço: " + resultado.getString("endereco"));
                 System.out.println("Cidade: " + resultado.getString("cidade"));
                 System.out.println("Estado: " + resultado.getString("estado"));
-                System.out.println("-------------------------");
+                System.out.println("=================================");
+                System.out.println();
+            }
+
+            if (!encontrou) {
+                System.out.println("Nenhum tutor cadastrado.");
             }
 
         } catch (SQLException e) {
