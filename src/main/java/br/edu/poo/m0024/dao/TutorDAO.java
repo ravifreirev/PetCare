@@ -57,6 +57,37 @@ public class TutorDAO {
         }
   }
 
+    public Tutor buscarPorId(int id) {
+        String sql = "SELECT * FROM tutor WHERE id = ?";
+
+        try (Connection conexao = Conexao.connect();
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+
+            try (ResultSet resultado = stmt.executeQuery()) {
+
+                if (resultado.next()) {
+                    return new Tutor(
+                            resultado.getInt("id"),
+                            resultado.getString("nome"),
+                            resultado.getString("cpf"),
+                            resultado.getString("telefone"),
+                            resultado.getString("cep"),
+                            resultado.getString("endereco"),
+                            resultado.getString("cidade"),
+                            resultado.getString("estado")
+                    );
+                }
+            }
+
+            return null;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
   public void atualizar (Tutor tutor) {
 
         String sql = "UPDATE tutor SET nome = ?, cpf = ?, telefone = ?, cep = ?, endereco = ?, cidade = ?, estado =? WHERE id = ?";

@@ -102,14 +102,19 @@ public class Tutor {
     }
 
     public void setTelefone(String telefone) {
-
-        if (telefone != null) {
-            telefone = telefone.replaceAll("[()\\s-]","");
+        if (telefone == null || telefone.isBlank()) {
+            this.telefone = null;
+            return;
         }
+
+        telefone = telefone.replaceAll("[()\\s-]", "");
 
         if (!telefone.matches("\\d{11}")) {
-            throw new IllegalArgumentException("O telefone deve conter 11 dígitos, incluindo o DDD");
+            throw new IllegalArgumentException(
+                    "O telefone deve conter 11 dígitos, incluindo o DDD"
+            );
         }
+
         this.telefone = telefone;
     }
 

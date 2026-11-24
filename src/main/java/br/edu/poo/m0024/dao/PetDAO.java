@@ -54,6 +54,36 @@ public class PetDAO {
         }
     }
 
+    public Pet buscarPorId(int id) {
+        String sql = "SELECT * FROM pet WHERE id = ?";
+
+        try (Connection conexao = Conexao.connect();
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+
+            try (ResultSet resultado = stmt.executeQuery()) {
+
+                if (resultado.next()) {
+                    return new Pet(
+                            resultado.getInt("id"),
+                            resultado.getString("nome"),
+                            resultado.getString("raca"),
+                            resultado.getString("especie"),
+                            resultado.getString("sexo"),
+                            resultado.getInt("idade"),
+                            resultado.getInt("tutor_id")
+                    );
+                }
+
+                return null;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void atualizar(Pet pet) {
 
         String sql = "UPDATE pet SET nome = ?, idade = ?, especie = ?, raca = ?, sexo = ? WHERE id = ?";
