@@ -33,7 +33,7 @@ Autor: Ravi Freire
 ### 1. Clonar o repositório
 
 ```bash
-git clone <URL-DO-REPOSITORIO>
+git clone https://github.com/ravifreirev/PetCare
 cd petcare
 ```
 
