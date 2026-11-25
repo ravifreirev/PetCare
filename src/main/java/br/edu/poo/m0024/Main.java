@@ -16,6 +16,14 @@ public class Main {
     private static final PetDAO petDAO = new PetDAO();
     private static final ViaCepService viaCepService = new ViaCepService();
 
+    private record DadosEndereco(
+            String cep,
+            String endereco,
+            String cidade,
+            String estado
+    ) {
+    }
+
     public static void main(String[] args) {
 
         System.out.println("Bem-vindo(a) ao PetCare!");
@@ -103,6 +111,60 @@ public class Main {
 
     // ================= TUTOR =================
 
+    private static DadosEndereco obterDadosEndereco() {
+
+        System.out.print("Digite o CEP do tutor: ");
+        String cep = scanner.nextLine();
+
+        String cepLimpo = cep.trim().replace("-", "");
+
+        if (!cepLimpo.matches("\\d{8}")) {
+            throw new IllegalArgumentException(
+                    "CEP inválido. Digite 8 números."
+            );
+        }
+
+        System.out.print("Digite o número da residência: ");
+        String numero = scanner.nextLine().trim();
+
+        if (numero.isBlank()) {
+            throw new IllegalArgumentException(
+                    "O número da residência não pode ficar vazio."
+            );
+        }
+
+        // Consulta o endereço na API ViaCEP
+        ViaCepResposta resposta = viaCepService.consultarCep(cepLimpo);
+
+        if (resposta == null || resposta.getLocalidade() == null) {
+            return null;
+        }
+
+        String logradouro = resposta.getLogradouro();
+
+        if (logradouro == null || logradouro.isBlank()) {
+            System.out.print(
+                    "O ViaCEP não informou a rua. Digite o nome da rua: "
+            );
+            logradouro = scanner.nextLine().trim();
+        }
+
+        if (logradouro.isBlank()) {
+            throw new IllegalArgumentException(
+                    "O nome da rua não pode ficar vazio."
+            );
+        }
+
+        String enderecoCompleto = logradouro + ", n° " + numero;
+
+        return new DadosEndereco(
+                cepLimpo,
+                enderecoCompleto,
+                resposta.getLocalidade(),
+                resposta.getUf()
+        );
+    }
+
     private static void cadastrarTutor() {
 
         System.out.print("Digite o nome do tutor: ");
@@ -116,51 +178,21 @@ public class Main {
         System.out.print("Digite o telefone do tutor: ");
         String telefone = scanner.nextLine();
 
-        System.out.print("Digite o CEP do tutor: ");
-        String cep = scanner.nextLine();
+        DadosEndereco dadosEndereco = obterDadosEndereco();
 
-        // Valida o CEP ANTES de chamar a API (evita erro no ViaCEP)
-        String cepLimpo = cep.trim().replace("-", "");
-        if (!cepLimpo.matches("\\d{8}")) {
-            throw new IllegalArgumentException("CEP inválido. Digite 8 números.");
-        }
-
-        System.out.print("Digite o número da residência: ");
-        String numero = scanner.nextLine().trim();
-
-        if (numero.isBlank()) {
-            throw new IllegalArgumentException(
-                    "O número da residência não pode ficar vazio."
-            );
-        }
-
-        ViaCepResposta endereco = viaCepService.consultarCep(cepLimpo);
-
-        // O ViaCEP responde "erro" para CEP que não existe: vem tudo nulo
-        if (endereco == null || endereco.getLocalidade() == null) {
+        if (dadosEndereco == null) {
             System.out.println("CEP não encontrado! Cadastro cancelado.");
             return;
         }
-
-        String logradouro = endereco.getLogradouro();
-
-        if (logradouro == null || logradouro.isBlank()) {
-            System.out.print("O ViaCEP não informou a rua. Digite o nome da rua: ");
-            logradouro = scanner.nextLine();
-        }
-
-        String enderecoCompleto = logradouro + ", n° " + numero;
-        String cidade = endereco.getLocalidade();
-        String estado = endereco.getUf();
 
         Tutor tutor = new Tutor(
                 nome,
                 cpf,
                 telefone,
-                cepLimpo,
-                enderecoCompleto,
-                cidade,
-                estado
+                dadosEndereco.cep(),
+                dadosEndereco.endereco(),
+                dadosEndereco.cidade(),
+                dadosEndereco.estado()
         );
 
         tutorDAO.cadastrar(tutor);
@@ -251,48 +283,17 @@ public class Main {
 
     private static boolean atualizarEnderecoTutor(Tutor tutor) {
 
-        System.out.print("Digite o novo CEP: ");
-        String cep = scanner.nextLine();
+        DadosEndereco dadosEndereco = obterDadosEndereco();
 
-        String cepLimpo = cep.trim().replace("-", "");
-
-        if (!cepLimpo.matches("\\d{8}")) {
-            throw new IllegalArgumentException(
-                    "CEP inválido. Digite 8 números."
-            );
-        }
-
-        // Consulta o novo CEP na API ViaCEP
-        ViaCepResposta endereco = viaCepService.consultarCep(cepLimpo);
-
-        if (endereco == null || endereco.getLocalidade() == null) {
+        if (dadosEndereco == null) {
             System.out.println("CEP não encontrado! Atualização cancelada.");
             return false;
         }
 
-        String logradouro = endereco.getLogradouro();
-
-        if (logradouro == null || logradouro.isBlank()) {
-            System.out.print("O ViaCEP não informou a rua. Digite o nome da rua: ");
-            logradouro = scanner.nextLine();
-        }
-
-        System.out.print("Digite o número da residência: ");
-        String numero = scanner.nextLine().trim();
-
-        if (numero.isBlank()) {
-            throw new IllegalArgumentException(
-                    "O número da residência não pode ficar vazio."
-            );
-        }
-
-        String enderecoCompleto = logradouro + ", n° " + numero;
-
-        // Atualiza os dados do endereço do tutor
-        tutor.setCep(cepLimpo);
-        tutor.setEndereco(enderecoCompleto);
-        tutor.setCidade(endereco.getLocalidade());
-        tutor.setEstado(endereco.getUf());
+        tutor.setCep(dadosEndereco.cep());
+        tutor.setEndereco(dadosEndereco.endereco());
+        tutor.setCidade(dadosEndereco.cidade());
+        tutor.setEstado(dadosEndereco.estado());
 
         return true;
     }
