@@ -101,6 +101,10 @@ public class Tutor {
     }
 
     public void setCpf(String cpf) {
+        this.cpf = validarCpf(cpf);
+    }
+
+    public static String validarCpf(String cpf) {
 
         if (cpf == null || cpf.isBlank()) {
             throw new IllegalArgumentException("CPF inválido.");
@@ -114,7 +118,47 @@ public class Tutor {
             );
         }
 
-        this.cpf = cpfLimpo;
+        if (cpfLimpo.matches("(\\d)\\1{10}")) {
+            throw new IllegalArgumentException(
+                    "CPF inválido. Todos os dígitos são iguais."
+            );
+        }
+
+        int soma = 0;
+
+        // Calcula o primeiro dígito verificador
+        for (int i = 0; i < 9; i++) {
+            int digito = Character.getNumericValue(cpfLimpo.charAt(i));
+            soma += digito * (10 - i);
+        }
+
+        int resto = soma % 11;
+        int primeiroDigito = (resto < 2) ? 0 : 11 - resto;
+
+        if (primeiroDigito != Character.getNumericValue(cpfLimpo.charAt(9))) {
+            throw new IllegalArgumentException(
+                    "CPF inválido. Dígito verificador incorreto."
+            );
+        }
+
+        soma = 0;
+
+        // Calcula o segundo dígito verificador
+        for (int i = 0; i < 10; i++) {
+            int digito = Character.getNumericValue(cpfLimpo.charAt(i));
+            soma += digito * (11 - i);
+        }
+
+        resto = soma % 11;
+        int segundoDigito = (resto < 2) ? 0 : 11 - resto;
+
+        if (segundoDigito != Character.getNumericValue(cpfLimpo.charAt(10))) {
+            throw new IllegalArgumentException(
+                    "CPF inválido. Dígito verificador incorreto."
+            );
+        }
+
+        return cpfLimpo;
     }
 
     public void setTelefone(String telefone) {

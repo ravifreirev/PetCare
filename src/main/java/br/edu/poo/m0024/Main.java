@@ -111,6 +111,8 @@ public class Main {
         System.out.print("Digite o CPF do tutor: ");
         String cpf = scanner.nextLine();
 
+        cpf = Tutor.validarCpf(cpf);
+
         System.out.print("Digite o telefone do tutor: ");
         String telefone = scanner.nextLine();
 
@@ -124,7 +126,13 @@ public class Main {
         }
 
         System.out.print("Digite o número da residência: ");
-        String numero = scanner.nextLine();
+        String numero = scanner.nextLine().trim();
+
+        if (numero.isBlank()) {
+            throw new IllegalArgumentException(
+                    "O número da residência não pode ficar vazio."
+            );
+        }
 
         ViaCepResposta endereco = viaCepService.consultarCep(cepLimpo);
 
