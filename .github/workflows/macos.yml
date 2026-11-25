@@ -1,0 +1,42 @@
+name: Teste de compatibilidade macOS
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  compilacao:
+    name: Compilar no macOS
+    runs-on: ${{ matrix.sistema }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        sistema:
+          - macos-latest
+          - macos-26-intel
+
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Conferir sistema e Java
+        run: |
+          uname -a
+          java -version
+          test -x ./mvnw
+
+      - name: Conferir Maven Wrapper
+        run: ./mvnw --batch-mode --version
+
+      - name: Compilar projeto
+        run: ./mvnw --batch-mode clean compile
